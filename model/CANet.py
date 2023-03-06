@@ -188,9 +188,9 @@ class CANet(nn.Module):
         v_o = self.obj_embedder(self.uniq_objs)
         
         # Pred obj  
-        ω_o_x_norm = F.normalize(ω_o_x, dim=-1)
-        v_o_norm = F.normalize(v_o, dim=-1)
-        d_cos_oi = ω_o_x_norm @ v_o_norm.t()
+        ω_o_x = F.normalize(ω_o_x, dim=-1)
+        v_o = F.normalize(v_o, dim=-1)
+        d_cos_oi = ω_o_x @ v_o.t()
         P_oi = (d_cos_oi + 1) / 2
         o_star = torch.argmax(d_cos_oi, dim=-1)
         v_o_star = self.obj_embedder(o_star)
@@ -198,16 +198,16 @@ class CANet(nn.Module):
         # Pred attr
         β = self.img_obj_compose(torch.cat((v_o_star, x), dim=-1))
         e_a = self.attr_adapter(β, v_a)
-        ω_a_x_norm = F.normalize(ω_a_x, dim=-1)
+        ω_a_x = F.normalize(ω_a_x, dim=-1)
         e_a = F.normalize(e_a, dim=-1)
-        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x_norm, e_a)
+        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x, e_a)
         P_ei = (d_cos_ei + 1) / 2
 
         # Pred composition
-        pair_embed = self.compose(self.val_attrs, self.val_objs)
+        v_ao = self.compose(self.val_attrs, self.val_objs)
         ω_c_x = F.normalize(ω_c_x, dim=-1)
-        pair_embed = F.normalize(pair_embed, dim=-1)
-        d_cos_ci = ω_c_x @ pair_embed.t()
+        v_ao = F.normalize(v_ao, dim=-1)
+        d_cos_ci = ω_c_x @ v_ao.t()
         P_ci = (d_cos_ci + 1) / 2
 
         scores = {}
@@ -232,9 +232,9 @@ class CANet(nn.Module):
         v_o = self.obj_embedder(self.uniq_objs)
 
         # Pred obj
-        ω_o_x_norm = F.normalize(ω_o_x, dim=-1)
+        ω_o_x = F.normalize(ω_o_x, dim=-1)
         v_o = F.normalize(v_o, dim=-1)
-        d_cos_oi = ω_o_x_norm @ v_o.t() # Eq.2
+        d_cos_oi = ω_o_x @ v_o.t() # Eq.2
         o_star = torch.argmax(d_cos_oi, dim=-1)
         v_o_star = self.obj_embedder(o_star)
 
