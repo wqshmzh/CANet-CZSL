@@ -20,6 +20,7 @@ def main():
     args.dataset = 'ut-zap50k'
     args.main_root = os.path.dirname(__file__)
     args.data_root = '/root/datasets'
+    device = 0
 
     # Get arguments and start logging
     print('> Initialize parameters')
@@ -30,7 +31,6 @@ def main():
     else:
         print('  No yml file found. Keep default parameter values in flags.py')
 
-    device = 0
     args.device = 'cuda:{}'.format(device)
     print('> Choose device: {}'.format(args.device))
     
