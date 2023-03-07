@@ -17,21 +17,24 @@ os.environ["CUDA_VISIBLE_DEVICES"] = '1'
 
 def main():
     args = parser.parse_args()
-    args.dataset = 'ut-zap50k'
+    args.dataset = 'ut-zap50k' # Choose from ut-zap50k | mit-states | cgqa
     args.main_root = os.path.dirname(__file__)
     args.data_root = '/root/datasets'
-    device = 0
+    device = 0 # Your GPU order. If you don't have a GPU, ignore this.
 
     # Get arguments and start logging
     print('> Initialize parameters')
     config_path = ospj(args.main_root, 'configs', args.dataset, 'CANet.yml')
-    if os.path.exists(config_path): # 如果存在保存着参数的值的yml文件，则加载参数，否则使用flags.py保存的默认参数值
+    if os.path.exists(config_path):
         load_args(config_path, args)
         print('  Load parameter values from file {}'.format(config_path))
     else:
         print('  No yml file found. Keep default parameter values in flags.py')
 
-    args.device = 'cuda:{}'.format(device)
+    if torch.cuda.is_available():
+        args.device = 'cuda:{}'.format(device)
+    else:
+        args.device = 'cpu'
     print('> Choose device: {}'.format(args.device))
     
     # Get dataset
