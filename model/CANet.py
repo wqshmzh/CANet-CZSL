@@ -12,8 +12,7 @@ class HyperNet(nn.Module):
         self.struct = struct  # channel config of the primary network
         for key, value in struct.items():
             setattr(self, key, nn.Sequential(
-                nn.Linear(value[0], value[1]),
-                nn.LayerNorm(value[1])
+                nn.Linear(value[0], value[1])
                 ))
 
     def forward(self, control_signal):
