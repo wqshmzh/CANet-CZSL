@@ -31,10 +31,10 @@ def main():
     # Get arguments and start logging
     print('> Initialize parameters')
     args = parser.parse_args()
-    args.dataset = 'mit-states'
+    args.dataset = 'mit-states' # Choose from ut-zap50k | mit-states | cgqa
     args.main_root = os.path.dirname(__file__)
     args.data_root = '/root/datasets/'
-    device = 0
+    device = 0 # Your GPU order. If you use CPU, ignore this.
     args.test_set = 'val'
     
     config_path = ospj(args.main_root, 'configs', args.dataset, 'CANet.yml')
@@ -45,7 +45,10 @@ def main():
         print('  No yml file found. Keep default parameter values in flags.py')
 
     # Choose device
-    args.device = 'cuda:{}'.format(device)
+    if torch.cuda.is_available():
+        args.device = 'cuda:{}'.format(device)
+    else:
+        args.device = 'cpu'
     print('> Choose device: {}'.format(args.device))
 
     # Tensorboard
