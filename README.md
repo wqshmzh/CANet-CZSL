@@ -23,7 +23,7 @@ If you find this work interesting please cite
 }
 ```
 
-All code was implemented using Python 3.10 and Pytorch on Ubuntu.
+All code was implemented using Python 3.10 and Pytorch 1.12 on Ubuntu.
 
 ## 1. Data Preparation
 
