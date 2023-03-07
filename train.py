@@ -52,7 +52,6 @@ def main():
     print('> Initialize tensorboard')
     logpath = ospj(args.main_root, 'logs', args.dataset)
     writer = SummaryWriter(log_dir=logpath, flush_secs=30)
-    writer = None
     os.makedirs(logpath, exist_ok=True)
     tb = program.TensorBoard()
     tb.configure(argv=[None, '--logdir', './logs'])
@@ -153,7 +152,7 @@ def test(args, epoch, image_extractor, model, testloader, evaluator, logpath):
         state['net'] = model.state_dict()
         if image_extractor:
             state['image_extractor'] = image_extractor.state_dict()
-        torch.save(state, ospj(args.main_root, 'saved model', 'ckpt_{}_{}.t7'.format(filename, args.dataset)))
+        torch.save(state, ospj(args.main_root, 'logs', args.dataset, 'ckpt_{}_{}.t7'.format(filename, args.dataset)))
 
     if args.update_image_features: image_extractor.eval()
     model = model.eval()
