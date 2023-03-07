@@ -56,7 +56,7 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
         > Slippers
     ```
 5. Run **/utils/reorganize_utzap.py** to reorganize images in UT-Zappos50K, where set DATA_FOLDER='/home/XXX/datasets' in line 20.
-6. (Optional) Delete sub-folders **Boots**, **Sandals**, **Shoes**, and **Slippers** in **ut-zap50k**.
+6. (Optional) Delete sub-folders **Boots**, **Sandals**, **Shoes**, and **Slippers** in the folder **ut-zap50k** if you want to save some disk space.
 
 ## 2. Inference
 
