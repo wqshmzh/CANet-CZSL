@@ -80,7 +80,7 @@ We provide the trained parameters for all three datasets:
      > ...
    ```
 
-2. Open **test.py**, you have to specify some arguments before running this code: **args.dataset**, **args.data_root**, and **device** in lines 31-34.
+2. Open **test.py**, you have to specify some arguments before running this code: **args.dataset**, **args.data_root**, and **device** in lines 20-23.
 3. Run this code. If you run the code for the first time, you will get a file **resnet18_feature_vectors.t7** in each dataset folder. This file contains visual embeddings of all images extracted by resnet-18 without any image augmentation. In this way, all visual embeddings are retrieved by image filename rather than being computed every time and thus reducing inference time significantly. You will get exactly the same results reported in the paper if everything sets.
    
    UT-Zappos50K:
