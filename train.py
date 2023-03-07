@@ -34,6 +34,7 @@ def main():
     args.dataset = 'mit-states'
     args.main_root = os.path.dirname(__file__)
     args.data_root = '/root/datasets/'
+    device = 0
     args.test_set = 'val'
     
     config_path = ospj(args.main_root, 'configs', args.dataset, 'CANet.yml')
@@ -44,7 +45,6 @@ def main():
         print('  No yml file found. Keep default parameter values in flags.py')
 
     # Choose device
-    device = 0
     args.device = 'cuda:{}'.format(device)
     print('> Choose device: {}'.format(args.device))
 
