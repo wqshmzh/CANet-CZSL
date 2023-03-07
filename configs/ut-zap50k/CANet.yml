@@ -5,7 +5,6 @@ dataset:
   train_only: true
 model_params:
   emb_type: fasttext
-  relu: false
   nhiddenlayers: 0
   nlayer: 2
   alpha: 0.4
