@@ -40,7 +40,7 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
 
     ```python
     > /home/XXX
-    > datasets
+      > datasets
         > ut-zap50k # can also be mit-states or cgqa
         - metadata_compositional-split-natural.t7
         > compositional-split-natural
