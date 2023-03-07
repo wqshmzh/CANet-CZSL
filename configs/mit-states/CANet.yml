@@ -13,7 +13,6 @@ training:
   batch_size: 256
   lr: 5.0e-05
   lrg: 5.0e-06 # Learning rete for image backbone if fine-tune the backbone
-  margin: 0.4
   cosine_scale: 0.05
   max_epochs: 800
   test_batch_size: 2048
