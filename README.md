@@ -111,6 +111,6 @@ Open **train.py** and set **args.dataset**, **args.data_root**, and **device** i
 
 You will notice that a folder named **logs** is created automatically after starting the training. This folder contains the saved checkpoint model, best model, tensorboard file, and all history results in a csv file.
 
-#
+## Acknowledgement
 
 This code package is based on the CZSL library at <https://github.com/ExplainableML/czsl>. We show our deep appreciation for their contribution.
