@@ -99,7 +99,7 @@ We provide the trained parameters for all three datasets:
    </p>
 
 
-*Warning: If you were using an older version pytorch, you would get slightly different results because the pre-trained parameters of the image backbone is different from the lasted version pytorch.*
+*Warning: If you were using an older version pytorch, you would get slightly different results because the pre-trained parameters of the image backbone are different from the lasted version pytorch.*
 
 ## 3. Training
 
