@@ -5,11 +5,8 @@ dataset:
   train_only: true
 model_params:
   emb_type: ft+w2v
-  relu: false
   nhiddenlayers: 0
   nlayer: 2
-  dropout: true
-  norm: true
   alpha: 0.2
 
 training:
