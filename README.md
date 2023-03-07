@@ -1,6 +1,6 @@
 # Conditional Attribute Network CANet
 
-This is the offical pytorch code for the paper:
+This is the official pytorch code for the paper:
 
 **Learning Conditional Attributes for Compositional Zero-Shot Learning, CVPR 2023**
 
