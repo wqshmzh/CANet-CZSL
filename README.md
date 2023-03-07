@@ -3,6 +3,11 @@
 This is the offical pytorch code for the paper:
 
 Learning Conditional Attributes for Compositional Zero-Shot Learning, CVPR 2023
+
+<p>
+<img src="figures/diagram.png" width="400">
+</p>
+
 <p>
 <img src="figures/architecture.png" width="800">
 </p>
@@ -58,6 +63,7 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
 We provide the trained parameters for all three datasets:
 
    Google Drive: <https://drive.google.com/drive/folders/1IGXPMRossFuVxIeWzvKRXrczXDNhHG1F?usp=sharing>
+
    Baidu Netdisk: <https://pan.baidu.com/s/1D3BaNKgTjy7dxI8fvcbbDA?pwd=2ity>
 
 1. Download all trained parameters into the manually created folder **saved model**. Now we have the folder structure:
@@ -76,7 +82,35 @@ We provide the trained parameters for all three datasets:
 
 2. Open **test.py**, you have to specify some arguments before running this code: **args.dataset**, **args.data_root**, and **device** in lines 31-34.
 3. Run this code. You will get exactly the same results reported in the paper.
+   
+   UT-Zappos50K:
+   <p>
+   <img src="figures/test_ut-zap50k.png" width="800">
+   </p>
+
+   MIT-States:
+   <p>
+   <img src="figures/test_mit-states.png" width="800">
+   </p>
+
+   C-GQA:
+   <p>
+   <img src="figures/test_cgqa.png" width="800">
+   </p>
+
+
+*Warning: If you were using an older version pytorch, you would get slightly different results because the pre-trained parameters of the image backbone is different from the lasted version pytorch.*
 
 ## 3. Training
 
-You can train the model from scratch
+You can train the model from scratch.
+
+You can edit configurations for different runs in **flags.py** and **configs/dataset name/CANet.yml**. The file **flags.py** defines some of the shared hyper-parameters and the *.yml files define dataset-specific hyper-parameters.
+
+Open **train.py** and set **args.dataset**, **args.data_root**, and **device** in lines 34-37 before your training.
+
+You will notice that a folder named **logs** is created automatically after starting the training. This folder contains the saved checkpoint model, best model, tensorboard file, and all history results in a csv file.
+
+#
+
+This code package is based on the CZSL library at <https://github.com/ExplainableML/czsl>. We show our deep appreciation for their contribution.
