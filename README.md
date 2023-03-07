@@ -2,7 +2,7 @@
 
 This is the offical pytorch code for the paper:
 
-Learning Conditional Attributes for Compositional Zero-Shot Learning, CVPR 2023
+**Learning Conditional Attributes for Compositional Zero-Shot Learning, CVPR 2023**
 
 <p>
 <img src="figures/diagram.png" width="400">
