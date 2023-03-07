@@ -13,8 +13,6 @@ from utils.utils import load_args
 from config_model import configure_model
 from flags import parser
 
-os.environ["CUDA_VISIBLE_DEVICES"] = '1'
-
 def main():
     args = parser.parse_args()
     args.dataset = 'ut-zap50k' # Choose from ut-zap50k | mit-states | cgqa
