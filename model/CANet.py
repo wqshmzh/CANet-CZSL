@@ -13,6 +13,7 @@ class HyperNet(nn.Module):
         for key, value in struct.items():
             setattr(self, key, nn.Sequential(
                 nn.Linear(value[0], value[1]),
+                nn.LayerNorm(value[1])
                 ))
 
     def forward(self, control_signal):
@@ -141,16 +142,16 @@ class CANet(nn.Module):
         '''======================================================'''
 
         '''=================== Attr adapter ====================='''
-        self.attr_adapter = AttrAdapter(input_dim=emb_dim, hypernet_struct=self.AttrHyperNet_struct, relu=args.relu)
+        self.attr_adapter = AttrAdapter(input_dim=emb_dim, hypernet_struct=self.AttrHyperNet_struct, relu=False)
         '''======================================================'''
 
         '''====================== Mapper ======================='''
-        self.image_embedder_attr = MLP(dset.feat_dim, emb_dim, relu=args.relu, num_layers=args.nlayers, bias=True,
-                                       dropout=self.args.dropout, norm=self.args.norm, layers=[])
-        self.image_embedder_obj = MLP(dset.feat_dim, emb_dim, relu=args.relu, num_layers=args.nlayers, bias=True,
-                                      dropout=self.args.dropout, norm=self.args.norm, layers=[])
-        self.image_embedder_both = MLP(dset.feat_dim, emb_dim, relu=args.relu, num_layers=args.nlayers, bias=True,
-                                       dropout=self.args.dropout, norm=self.args.norm, layers=[])
+        self.image_embedder_attr = MLP(dset.feat_dim, emb_dim, num_layers=args.nlayers, relu=False, bias=True,
+                                       dropout=True, norm=True, layers=[])
+        self.image_embedder_obj = MLP(dset.feat_dim, emb_dim, num_layers=args.nlayers, relu=False, bias=True,
+                                      dropout=True, norm=True, layers=[])
+        self.image_embedder_both = MLP(dset.feat_dim, emb_dim, num_layers=args.nlayers, relu=False, bias=True,
+                                       dropout=True, norm=True, layers=[])
         '''======================================================'''
 
         # static inputs
@@ -160,10 +161,10 @@ class CANet(nn.Module):
             for param in self.obj_embedder.parameters():
                 param.requires_grad = False
 
-        self.img_obj_compose = MLP(emb_dim+dset.feat_dim, emb_dim, bias=True, dropout=True, norm=True,
+        self.img_obj_compose = MLP(emb_dim+dset.feat_dim, emb_dim, relu=True, bias=True, dropout=True, norm=True,
                               num_layers=2, layers=[emb_dim])
         
-        self.projection = MLP(emb_dim*2, emb_dim, bias=True, dropout=True, norm=True,
+        self.projection = MLP(emb_dim*2, emb_dim, relu=True, bias=True, dropout=True, norm=True,
                         num_layers=2, layers=[])
         
         self.alpha = args.alpha # weight factor
@@ -188,9 +189,9 @@ class CANet(nn.Module):
         v_o = self.obj_embedder(self.uniq_objs)
         
         # Pred obj  
-        ω_o_x = F.normalize(ω_o_x, dim=-1)
-        v_o = F.normalize(v_o, dim=-1)
-        d_cos_oi = ω_o_x @ v_o.t()
+        ω_o_x_norm = F.normalize(ω_o_x, dim=-1)
+        v_o_norm = F.normalize(v_o, dim=-1)
+        d_cos_oi = ω_o_x_norm @ v_o_norm.t()
         P_oi = (d_cos_oi + 1) / 2
         o_star = torch.argmax(d_cos_oi, dim=-1)
         v_o_star = self.obj_embedder(o_star)
@@ -198,16 +199,16 @@ class CANet(nn.Module):
         # Pred attr
         β = self.img_obj_compose(torch.cat((v_o_star, x), dim=-1))
         e_a = self.attr_adapter(β, v_a)
-        ω_a_x = F.normalize(ω_a_x, dim=-1)
+        ω_a_x_norm = F.normalize(ω_a_x, dim=-1)
         e_a = F.normalize(e_a, dim=-1)
-        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x, e_a)
+        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x_norm, e_a)
         P_ei = (d_cos_ei + 1) / 2
 
         # Pred composition
-        v_ao = self.compose(self.val_attrs, self.val_objs)
+        pair_embed = self.compose(self.val_attrs, self.val_objs)
         ω_c_x = F.normalize(ω_c_x, dim=-1)
-        v_ao = F.normalize(v_ao, dim=-1)
-        d_cos_ci = ω_c_x @ v_ao.t()
+        pair_embed = F.normalize(pair_embed, dim=-1)
+        d_cos_ci = ω_c_x @ pair_embed.t()
         P_ci = (d_cos_ci + 1) / 2
 
         scores = {}
@@ -232,9 +233,9 @@ class CANet(nn.Module):
         v_o = self.obj_embedder(self.uniq_objs)
 
         # Pred obj
-        ω_o_x = F.normalize(ω_o_x, dim=-1)
+        ω_o_x_norm = F.normalize(ω_o_x, dim=-1)
         v_o = F.normalize(v_o, dim=-1)
-        d_cos_oi = ω_o_x @ v_o.t() # Eq.2
+        d_cos_oi = ω_o_x_norm @ v_o.t() # Eq.2
         o_star = torch.argmax(d_cos_oi, dim=-1)
         v_o_star = self.obj_embedder(o_star)
 
