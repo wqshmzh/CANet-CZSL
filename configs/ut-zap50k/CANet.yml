@@ -8,15 +8,12 @@ model_params:
   relu: false
   nhiddenlayers: 0
   nlayer: 2
-  dropout: true
-  norm: true
   alpha: 0.4
 
 training:
   batch_size: 256
   lr: 5.0e-05
   lrg: 5.0e-06 # Learning rete for image backbone if fine-tune the backbone
-  margin: 0.4
   cosine_scale: 0.02
   max_epochs: 500
   test_batch_size: 2048
