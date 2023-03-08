@@ -53,7 +53,8 @@ def main():
         num_workers=args.num_workers)
 
     # Get model and optimizer
-    image_extractor, model = configure_model(args, testset, train=False)
+    args.train = False
+    image_extractor, model = configure_model(args, testset, train=args.train)
     print(model)
 
     # load saved model
