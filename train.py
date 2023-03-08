@@ -81,6 +81,7 @@ def main():
     )
 
     # Get model and optimizer
+    args.train = True
     image_extractor, model, optimizer = configure_model(args, trainset)
     print(model)
 
