@@ -82,7 +82,6 @@ class AttrAdapter(nn.Module):
 class CANet(nn.Module):
     def __init__(self, dset, args):
         super(CANet, self).__init__()
-        self.args = args
         self.dset = dset
 
         def get_all_ids(relevant_pairs):
@@ -113,38 +112,38 @@ class CANet(nn.Module):
         obj_word_emb_file = os.path.join(args.main_root, 'word embedding', obj_word_emb_file)
 
         print('  Load attribute word embeddings--')
-        if os.path.exists(attr_word_emb_file):
+        if os.path.exists(attr_word_emb_file) and not args.train:
             pretrained_weight_attr = torch.load(attr_word_emb_file, map_location=args.device)
         else:
             pretrained_weight_attr = load_word_embeddings(dset.attrs, args)
             print('  Save attr word embeddings using {}'.format(args.emb_type))
-            torch.save(pretrained_weight_attr, attr_word_emb_file)
+            # torch.save(pretrained_weight_attr, attr_word_emb_file)
         emb_dim = pretrained_weight_attr.shape[1]
         self.attr_embedder = nn.Embedding(len(dset.attrs), emb_dim).to(args.device)
         self.attr_embedder.weight.data.copy_(pretrained_weight_attr)
 
         print('  Load object word embeddings--')
-        if os.path.exists(obj_word_emb_file):
+        if os.path.exists(obj_word_emb_file) and not args.train:
             pretrained_weight_obj = torch.load(obj_word_emb_file, map_location=args.device)
         else:
             pretrained_weight_obj = load_word_embeddings(dset.objs, args)
             print('  Save obj word embeddings using {}'.format(args.emb_type))
-            torch.save(pretrained_weight_obj, obj_word_emb_file)
+            # torch.save(pretrained_weight_obj, obj_word_emb_file)
         self.obj_embedder = nn.Embedding(len(dset.objs), emb_dim).to(args.device)
         self.obj_embedder.weight.data.copy_(pretrained_weight_obj)
         '''======================================================'''
 
-        '''====================== HyperNet ======================'''
+        '''=============== AttrHyperLearnerStruct ==============='''
         AttrHyperNet_struct = HyperNetStructure(input_dim=emb_dim, num_hiddenLayer=args.nhiddenlayers, 
             hidden_dim=emb_dim*2, output_dim=emb_dim)
         self.AttrHyperNet_struct = AttrHyperNet_struct.get_structure()
         '''======================================================'''
 
-        '''=================== Attr adapter ====================='''
+        '''================== AttrBaseLearner ==================='''
         self.attr_adapter = AttrAdapter(input_dim=emb_dim, hypernet_struct=self.AttrHyperNet_struct, relu=False)
         '''======================================================'''
 
-        '''====================== Mapper ======================='''
+        '''======================= Mapper ======================='''
         self.image_embedder_attr = MLP(dset.feat_dim, emb_dim, num_layers=args.nlayers, relu=False, bias=True,
                                        dropout=True, norm=True, layers=[])
         self.image_embedder_obj = MLP(dset.feat_dim, emb_dim, num_layers=args.nlayers, relu=False, bias=True,
@@ -167,7 +166,7 @@ class CANet(nn.Module):
                         num_layers=2, layers=[])
         
         self.alpha = args.alpha # weight factor
-        self.τ = self.args.cosine_scale # temperature factor
+        self.τ = args.cosine_scale # temperature factor
                 
     def compose(self, attrs, objs):
         attrs, objs = self.attr_embedder(attrs), self.obj_embedder(objs)
@@ -188,9 +187,9 @@ class CANet(nn.Module):
         v_o = self.obj_embedder(self.uniq_objs)
         
         # Pred obj  
-        ω_o_x = F.normalize(ω_o_x, dim=-1)
-        v_o = F.normalize(v_o, dim=-1)
-        d_cos_oi = ω_o_x @ v_o.t()
+        ω_o_x_norm = F.normalize(ω_o_x, dim=-1)
+        v_o_norm = F.normalize(v_o, dim=-1)
+        d_cos_oi = ω_o_x_norm @ v_o_norm.t()
         P_oi = (d_cos_oi + 1) / 2
         o_star = torch.argmax(d_cos_oi, dim=-1)
         v_o_star = self.obj_embedder(o_star)
@@ -198,9 +197,9 @@ class CANet(nn.Module):
         # Pred attr
         β = self.img_obj_compose(torch.cat((v_o_star, x), dim=-1))
         e_a = self.attr_adapter(β, v_a)
-        ω_a_x = F.normalize(ω_a_x, dim=-1)
+        ω_a_x_norm = F.normalize(ω_a_x, dim=-1)
         e_a = F.normalize(e_a, dim=-1)
-        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x, e_a)
+        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x_norm, e_a)
         P_ei = (d_cos_ei + 1) / 2
 
         # Pred composition
