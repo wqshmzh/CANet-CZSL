@@ -105,7 +105,7 @@ We provide the trained parameters for all three datasets:
 
 You can train the model from scratch.
 
-1. Before your training, you have to download the all pre-trained word embeddings:
+1. Before your training, you have to download all pre-trained word embeddings:
 
    FastText: <https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz>
 
