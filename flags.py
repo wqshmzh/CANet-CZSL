@@ -12,6 +12,7 @@ parser.add_argument('--cpu_eval', action='store_true', help='Perform test on cpu
 parser.add_argument('--train_split', default='normal', help='How to split training set: normal-no split|obj|attr')
 
 # Training hyperparameters
+parser.add_argument('--train', type=bool, help='Training or evaluation?')
 parser.add_argument('--topk', type=int, default=1,help="Compute topk accuracy")
 parser.add_argument('--num_workers', type=int, default=16,help="Number of workers")
 parser.add_argument('--batch_size', type=int, default=256,help="Training batch size")
