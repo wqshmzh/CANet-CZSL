@@ -117,7 +117,7 @@ class CANet(nn.Module):
         else:
             pretrained_weight_attr = load_word_embeddings(dset.attrs, args)
             print('  Save attr word embeddings using {}'.format(args.emb_type))
-            torch.save(pretrained_weight_attr, attr_word_emb_file)
+            # torch.save(pretrained_weight_attr, attr_word_emb_file)
         emb_dim = pretrained_weight_attr.shape[1]
         self.attr_embedder = nn.Embedding(len(dset.attrs), emb_dim).to(args.device)
         self.attr_embedder.weight.data.copy_(pretrained_weight_attr)
@@ -128,18 +128,18 @@ class CANet(nn.Module):
         else:
             pretrained_weight_obj = load_word_embeddings(dset.objs, args)
             print('  Save obj word embeddings using {}'.format(args.emb_type))
-            torch.save(pretrained_weight_obj, obj_word_emb_file)
+            # torch.save(pretrained_weight_obj, obj_word_emb_file)
         self.obj_embedder = nn.Embedding(len(dset.objs), emb_dim).to(args.device)
         self.obj_embedder.weight.data.copy_(pretrained_weight_obj)
         '''======================================================'''
 
-        '''=============== AttrHyperLearnerStruct ==============='''
+        '''====================== HyperNet ======================'''
         AttrHyperNet_struct = HyperNetStructure(input_dim=emb_dim, num_hiddenLayer=args.nhiddenlayers, 
             hidden_dim=emb_dim*2, output_dim=emb_dim)
         self.AttrHyperNet_struct = AttrHyperNet_struct.get_structure()
         '''======================================================'''
 
-        '''================== AttrBaseLearner ==================='''
+        '''=================== Attr adapter ====================='''
         self.attr_adapter = AttrAdapter(input_dim=emb_dim, hypernet_struct=self.AttrHyperNet_struct, relu=False)
         '''======================================================'''
 
@@ -158,12 +158,12 @@ class CANet(nn.Module):
                 param.requires_grad = False
             for param in self.obj_embedder.parameters():
                 param.requires_grad = False
-
-        self.img_obj_compose = MLP(emb_dim+dset.feat_dim, emb_dim, relu=True, bias=True, dropout=True, norm=True,
-                              num_layers=2, layers=[emb_dim])
         
         self.projection = MLP(emb_dim*2, emb_dim, relu=True, bias=True, dropout=True, norm=True,
-                        num_layers=2, layers=[])
+                              num_layers=2, layers=[])
+
+        self.img_obj_compose = MLP(emb_dim+dset.feat_dim, emb_dim, relu=True, bias=True, dropout=True, norm=True,
+                                   num_layers=2, layers=[emb_dim])
         
         self.alpha = args.alpha # weight factor
         self.τ = args.cosine_scale # temperature factor
@@ -219,7 +219,6 @@ class CANet(nn.Module):
     def train_forward(self, input_batch):
         x, a, o, c = input_batch[0], input_batch[1], input_batch[2], input_batch[3]
         del input_batch
-        batch_size = x.shape[0]
 
         # Map the input image embedding
         ω_a_x = self.image_embedder_attr(x)
@@ -235,6 +234,7 @@ class CANet(nn.Module):
         v_o = F.normalize(v_o, dim=-1)
         d_cos_oi = ω_o_x @ v_o.t() # Eq.2
         o_star = torch.argmax(d_cos_oi, dim=-1)
+        d_cos_oi = d_cos_oi / self.τ
         v_o_star = self.obj_embedder(o_star)
 
         # Pred attr
@@ -243,16 +243,18 @@ class CANet(nn.Module):
         ω_a_x = F.normalize(ω_a_x, dim=-1)
         e_a = F.normalize(e_a, dim=-1)
         d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x, e_a) # Eq.7
+        d_cos_ei = d_cos_ei / self.τ
 
         # Pred composition
         v_ao = self.compose(self.train_attrs, self.train_objs)
         ω_c_x = F.normalize(ω_c_x, dim=-1)
         v_ao = F.normalize(v_ao, dim=-1)
         d_cos_ci = ω_c_x @ v_ao.t() # Eq.8
+        d_cos_ci = d_cos_ci / self.τ
         
-        L_o = F.cross_entropy(d_cos_oi/self.τ, o) # Eq.10
-        L_a = F.cross_entropy(d_cos_ei/self.τ, a) # Eq.9
-        L_ao = F.cross_entropy(d_cos_ci/self.τ, c) # Eq.11
+        L_o = F.cross_entropy(d_cos_oi, o) # Eq.10
+        L_a = F.cross_entropy(d_cos_ei, a) # Eq.9
+        L_ao = F.cross_entropy(d_cos_ci, c) # Eq.11
 
         return (L_a + L_o) / 2 + L_ao, None # Eq.12
 
