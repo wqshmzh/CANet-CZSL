@@ -117,7 +117,7 @@ class CANet(nn.Module):
         else:
             pretrained_weight_attr = load_word_embeddings(dset.attrs, args)
             print('  Save attr word embeddings using {}'.format(args.emb_type))
-            # torch.save(pretrained_weight_attr, attr_word_emb_file)
+            torch.save(pretrained_weight_attr, attr_word_emb_file)
         emb_dim = pretrained_weight_attr.shape[1]
         self.attr_embedder = nn.Embedding(len(dset.attrs), emb_dim).to(args.device)
         self.attr_embedder.weight.data.copy_(pretrained_weight_attr)
@@ -128,7 +128,7 @@ class CANet(nn.Module):
         else:
             pretrained_weight_obj = load_word_embeddings(dset.objs, args)
             print('  Save obj word embeddings using {}'.format(args.emb_type))
-            # torch.save(pretrained_weight_obj, obj_word_emb_file)
+            torch.save(pretrained_weight_obj, obj_word_emb_file)
         self.obj_embedder = nn.Embedding(len(dset.objs), emb_dim).to(args.device)
         self.obj_embedder.weight.data.copy_(pretrained_weight_obj)
         '''======================================================'''
