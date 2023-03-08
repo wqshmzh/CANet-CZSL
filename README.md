@@ -1,8 +1,11 @@
 # Conditional Attribute Network CANet
 
-This is the official pytorch code for the paper:
+This is the pytorch code for the paper:
 
-**Q. Wang, L. Liu, C. Chen, et.al., Learning Conditional Attributes for Compositional Zero-Shot Learning, CVPR 2023**
+> **Title:** Learning Conditional Attributes for Compositional Zero-Shot Learning<br>
+> **Authors:** Qingsheng Wang, Lingqiao Liu, Chenchen Jing, et.al.<br>
+> **Publication:** IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2023<br>
+> **Published Paper:** Comming soon...
 
 <p>
 <img src="figures/diagram.png" width="400">
@@ -55,6 +58,7 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
         > Shoes
         > Slippers
     ```
+
 5. Run **/utils/reorganize_utzap.py** to reorganize images in UT-Zappos50K, where set **DATA_FOLDER='/home/XXX/datasets'** in line 20.
 6. (Optional) Delete sub-folders **Boots**, **Sandals**, **Shoes**, and **Slippers** in the folder **ut-zap50k** if you want to save some disk space.
 
@@ -67,7 +71,7 @@ We provide the trained parameters for all three datasets:
    Baidu Netdisk: <https://pan.baidu.com/s/1D3BaNKgTjy7dxI8fvcbbDA?pwd=2ity>
 
 1. Download all trained parameters into the manually created folder **saved model**. Now we have the folder structure:
-   
+
    ```
    > CANet-CZSL-master
      > ...
@@ -82,7 +86,7 @@ We provide the trained parameters for all three datasets:
 
 2. Open **test.py**, you have to specify some arguments before running this code: **args.dataset**, **args.data_root**, and **device** in lines 18-21.
 3. Run this code. If you run the code for the first time, you will get a file **resnet18_feature_vectors.t7** in each dataset folder. This file contains visual embeddings of all images extracted by resnet-18 without any image augmentation. In this way, all visual embeddings are retrieved by image filename rather than being computed every time and thus reducing inference time significantly. You will get exactly the same results reported in the paper if everything sets (Results in the paper are rounded).
-   
+
    UT-Zappos50K:
    <p>
    <img src="figures/test_ut-zap50k.png" width="800">
@@ -98,14 +102,13 @@ We provide the trained parameters for all three datasets:
    <img src="figures/test_cgqa.png" width="800">
    </p>
 
-
 *Warning: If you were using an older version pytorch, you would get slightly different results because the pre-trained parameters of the image backbone are different from the lasted version pytorch.*
 
 ## 3. Training
 
 You can train the model from scratch.
 
-1. Before your training, you have to download all pre-trained word embeddings:
+1. Before your training, you have to download the all pre-trained word embeddings:
 
    FastText: <https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz>
 
@@ -123,6 +126,7 @@ You can train the model from scratch.
          - GoogleNews-vectors-negative300.bin.gz
      > ...
    ```
+
    You cannot just use the saved word embeddings provided in this code package. Because these embeddings have already been optimized together with other modules in different datasets.
 
 2. You can edit configurations for different runs in **flags.py** and **configs/dataset name
