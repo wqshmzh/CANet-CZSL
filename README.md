@@ -108,33 +108,12 @@ We provide the trained parameters for all three datasets:
 
 You can train the model from scratch.
 
-1. Before your training, you have to download the all pre-trained word embeddings:
-
-   FastText: <https://dl.fbaipublicfiles.com/fasttext/vectors-crawl/cc.en.300.bin.gz>
-
-   Word2Vec: <https://s3.amazonaws.com/dl4j-distribution/GoogleNews-vectors-negative300.bin.gz>
-
-   Create a word embedding folder, e.g., /home/XXX/word_embedding, place the above downloaded files into their corresponding folder. The standard structure is as follows:
-
-   ```
-   > /home/XXX
-     > ...
-     > word_embedding
-       > fasttext
-         - cc.en.300.bin.gz
-       > word2vec
-         - GoogleNews-vectors-negative300.bin.gz
-     > ...
-   ```
-
-   You cannot just use the saved word embeddings provided in this code package. Because these embeddings have already been optimized together with other modules in different datasets.
-
-2. You can edit configurations for different runs in **flags.py** and **configs/dataset name
+1. You can edit configurations for different runs in **flags.py** and **configs/dataset name
    CANet.yml**. The file **flags.py** defines some of the shared hyper-parameters and the *.yml files define dataset-specific hyper-parameters.
 
-3. Open **model/word_embedding.py** and set the global variable **DATA_FOLDER = '/home/XXX/word_embedding/'** in line 4 to tell where you save these pre-trained word embeddings.
+2. Open **model/word_embedding.py** and set the global variable **DATA_FOLDER = '/home/XXX/word_embedding/'** in line 4 to tell where you save these pre-trained word embeddings.
 
-4. Open **train.py** and set **args.dataset**, **args.data_root**, and **device** in lines 34-37 before your training.
+3. Open **train.py** and set **args.dataset**, **args.data_root**, and **device** in lines 34-37 before your training.
 
 You will notice that a folder named **logs** is created automatically after starting the training. This folder contains the saved checkpoint model, best model, tensorboard file, and all history results in a csv file.
 
