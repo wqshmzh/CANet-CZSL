@@ -5,7 +5,7 @@ This is the pytorch code for the paper:
 > **Title:** Learning Conditional Attributes for Compositional Zero-Shot Learning<br>
 > **Authors:** Qingsheng Wang, Lingqiao Liu, Chenchen Jing, et.al.<br>
 > **Publication:** IEEE Conference on Computer Vision and Pattern Recognition (CVPR) 2023<br>
-> **Published Paper:** https://openaccess.thecvf.com/content/CVPR2023/html/Wang_Learning_Conditional_Attributes_for_Compositional_Zero-Shot_Learning_CVPR_2023_paper.html
+> **Published Paper:** https://arxiv.org/abs/2305.17940
 
 <p>
 <img src="figures/diagram.png" width="400">
