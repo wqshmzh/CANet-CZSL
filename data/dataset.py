@@ -245,9 +245,6 @@ class CompositionDataset(Dataset):
                 files_all.append(os.path.join(parts[-2], parts[-1]))
         transform = dataset_transform('test', self.norm_family) # Do not use any image augmentation, because we have a trained image backbone
         feat_extractor = get_image_extractor(arch=model).eval()
-        if not self.args.extract_feature_vectors:
-            from torch.nn import Sequential
-            feat_extractor = Sequential(*list(feat_extractor.children())[:-1])
         feat_extractor = feat_extractor.to(self.device)
 
         image_feats = []
