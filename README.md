@@ -40,10 +40,12 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
 2. Download data splits for UT-Zappos50K and MIT-States at <https://www.senthilpurushwalkam.com/publication/compositional/compositional_split_natural.tar.gz>
 3. We provide the resnet18 feature vectors for all three datasets:
    Google Drive: <https://drive.google.com/drive/folders/1IGXPMRossFuVxIeWzvKRXrczXDNhHG1F?usp=sharing>
+
    Baidu Netdisk: <https://pan.baidu.com/s/1mnjegQm6x6_Ms9AhoycLFg?pwd=bmic>
+   
    Place the "resnet18_feature_vectors.t7" into each of the dataset main path.
-4. Unzip the downloaded file **compositional_split_natural.tar.gz** and place the sub-folders **mit-states** and **ut-zap50k** into the corresponding dataset folder. Note that the cgqa dataset zip file contains its own data split.
-5. Now, we have the following folder structure for the three datasets:
+5. Unzip the downloaded file **compositional_split_natural.tar.gz** and place the sub-folders **mit-states** and **ut-zap50k** into the corresponding dataset folder. Note that the cgqa dataset zip file contains its own data split.
+6. Now, we have the following folder structure for the three datasets:
 
     ```python
     > /home/XXX
