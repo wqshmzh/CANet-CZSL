@@ -68,7 +68,7 @@ We provide the trained parameters for all three datasets:
 
    Google Drive: <https://drive.google.com/drive/folders/1IGXPMRossFuVxIeWzvKRXrczXDNhHG1F?usp=sharing>
 
-   Baidu Netdisk: <https://pan.baidu.com/s/1D3BaNKgTjy7dxI8fvcbbDA?pwd=2ity>
+   Baidu Netdisk: <https://pan.baidu.com/s/1mnjegQm6x6_Ms9AhoycLFg?pwd=bmic>
 
 1. Download all trained parameters into the manually created folder **saved model**. Now we have the folder structure:
 
