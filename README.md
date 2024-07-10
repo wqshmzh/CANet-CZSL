@@ -38,15 +38,20 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
 
 1. Download datasets UT-Zappos50K, MIT-States, and C-GQA and unzip them into a dataset folder, e.g., /home/XXX/datasets. Rename the dataset folder names as **ut-zap50k**, **mit-states**, and **cgqa**.
 2. Download data splits for UT-Zappos50K and MIT-States at <https://www.senthilpurushwalkam.com/publication/compositional/compositional_split_natural.tar.gz>
-3. Unzip the downloaded file **compositional_split_natural.tar.gz** and place the sub-folders **mit-states** and **ut-zap50k** into the corresponding dataset folder. Note that the cgqa dataset zip file contains its own data split.
-4. Now, we have the following folder structure for the three datasets:
+3. We provide the resnet18 feature vectors for all three datasets:
+   Google Drive: <https://drive.google.com/drive/folders/1IGXPMRossFuVxIeWzvKRXrczXDNhHG1F?usp=sharing>
+   Baidu Netdisk: <https://pan.baidu.com/s/1mnjegQm6x6_Ms9AhoycLFg?pwd=bmic>
+   Place the "resnet18_feature_vectors.t7" into each of the dataset main path.
+4. Unzip the downloaded file **compositional_split_natural.tar.gz** and place the sub-folders **mit-states** and **ut-zap50k** into the corresponding dataset folder. Note that the cgqa dataset zip file contains its own data split.
+5. Now, we have the following folder structure for the three datasets:
 
     ```python
     > /home/XXX
       > datasets
         > ut-zap50k # can also be mit-states or cgqa
-        - metadata_compositional-split-natural.t7
-        > compositional-split-natural
+          - metadata_compositional-split-natural.t7
+          - resnet18_feature_vectors.t7
+          > compositional-split-natural
             - test_pairs.txt
             - train_pairs.txt
             - val_pairs.txt
@@ -59,8 +64,8 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
         > Slippers
     ```
 
-5. Run **/utils/reorganize_utzap.py** to reorganize images in UT-Zappos50K, where set **DATA_FOLDER='/home/XXX/datasets'** in line 20.
-6. (Optional) Delete sub-folders **Boots**, **Sandals**, **Shoes**, and **Slippers** in the folder **ut-zap50k** if you want to save some disk space.
+7. Run **/utils/reorganize_utzap.py** to reorganize images in UT-Zappos50K, where set **DATA_FOLDER='/home/XXX/datasets'** in line 20.
+8. (Optional) Delete sub-folders **Boots**, **Sandals**, **Shoes**, and **Slippers** in the folder **ut-zap50k** if you want to save some disk space.
 
 ## 2. Inference
 
