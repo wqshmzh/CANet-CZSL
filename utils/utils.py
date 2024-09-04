@@ -8,7 +8,7 @@ import yaml
 import numpy as np
 from typing import TypeVar
 
-def seed_torch(seed=42):
+def seed_torch(seed=0):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
     np.random.seed(seed)
@@ -18,6 +18,7 @@ def seed_torch(seed=42):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     torch.backends.cudnn.enabled = False
+    torch.backends.cuda.matmul.allow_tf32 = False
 
 def chunks(l, n):
     """Yield successive n-sized chunks from l."""
