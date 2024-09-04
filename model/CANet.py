@@ -3,8 +3,10 @@ import os
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from model.word_embedding import load_word_embeddings
+
 from model.common import MLP
+from model.word_embedding import load_word_embeddings
+
 
 class HyperNet(nn.Module):
     def __init__(self, struct):
@@ -12,7 +14,7 @@ class HyperNet(nn.Module):
         self.struct = struct  # channel config of the primary network
         for key, value in struct.items():
             setattr(self, key, nn.Sequential(
-                nn.Linear(value[0], value[1])
+                nn.Linear(value[0], value[1]),
                 ))
 
     def forward(self, control_signal):
@@ -117,7 +119,7 @@ class CANet(nn.Module):
         else:
             pretrained_weight_attr = load_word_embeddings(dset.attrs, args)
             print('  Save attr word embeddings using {}'.format(args.emb_type))
-            # torch.save(pretrained_weight_attr, attr_word_emb_file)
+            torch.save(pretrained_weight_attr, attr_word_emb_file)
         emb_dim = pretrained_weight_attr.shape[1]
         self.attr_embedder = nn.Embedding(len(dset.attrs), emb_dim).to(args.device)
         self.attr_embedder.weight.data.copy_(pretrained_weight_attr)
@@ -128,13 +130,13 @@ class CANet(nn.Module):
         else:
             pretrained_weight_obj = load_word_embeddings(dset.objs, args)
             print('  Save obj word embeddings using {}'.format(args.emb_type))
-            # torch.save(pretrained_weight_obj, obj_word_emb_file)
+            torch.save(pretrained_weight_obj, obj_word_emb_file)
         self.obj_embedder = nn.Embedding(len(dset.objs), emb_dim).to(args.device)
         self.obj_embedder.weight.data.copy_(pretrained_weight_obj)
         '''======================================================'''
 
         '''====================== HyperNet ======================'''
-        AttrHyperNet_struct = HyperNetStructure(input_dim=emb_dim, num_hiddenLayer=args.nhiddenlayers, 
+        AttrHyperNet_struct = HyperNetStructure(input_dim=emb_dim, num_hiddenLayer=args.nhiddenlayers,
             hidden_dim=emb_dim*2, output_dim=emb_dim)
         self.AttrHyperNet_struct = AttrHyperNet_struct.get_structure()
         '''======================================================'''
@@ -167,6 +169,20 @@ class CANet(nn.Module):
         
         self.alpha = args.alpha # weight factor
         self.τ = args.cosine_scale # temperature factor
+        self._initialize_weights()
+        
+    def _initialize_weights(self):
+        for n, m in self.named_modules():
+            if isinstance(m, nn.Linear) and 'hyper_net' not in n:
+                nn.init.normal_(m.weight, 0, 0.001)
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            if isinstance(m, nn.Linear) and 'hyper_net' in n:
+                nn.init.kaiming_normal_(m.weight, nonlinearity='leaky_relu')
+                if m.bias is not None:
+                    nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Embedding):
+                nn.init.normal_(m.weight, 0, 0.01)
                 
     def compose(self, attrs, objs):
         attrs, objs = self.attr_embedder(attrs), self.obj_embedder(objs)
@@ -203,10 +219,10 @@ class CANet(nn.Module):
         P_ei = (d_cos_ei + 1) / 2
 
         # Pred composition
-        pair_embed = self.compose(self.val_attrs, self.val_objs)
+        v_ao = self.compose(self.val_attrs, self.val_objs)
         ω_c_x = F.normalize(ω_c_x, dim=-1)
-        pair_embed = F.normalize(pair_embed, dim=-1)
-        d_cos_ci = ω_c_x @ pair_embed.t()
+        v_ao = F.normalize(v_ao, dim=-1)
+        d_cos_ci = ω_c_x @ v_ao.t()
         P_ci = (d_cos_ci + 1) / 2
 
         scores = {}
@@ -230,9 +246,9 @@ class CANet(nn.Module):
         v_o = self.obj_embedder(self.uniq_objs)
 
         # Pred obj
-        ω_o_x = F.normalize(ω_o_x, dim=-1)
-        v_o = F.normalize(v_o, dim=-1)
-        d_cos_oi = ω_o_x @ v_o.t() # Eq.2
+        ω_o_x_norm = F.normalize(ω_o_x, dim=-1)
+        v_o_norm = F.normalize(v_o, dim=-1)
+        d_cos_oi = ω_o_x_norm @ v_o_norm.t() # Eq.2
         o_star = torch.argmax(d_cos_oi, dim=-1)
         d_cos_oi = d_cos_oi / self.τ
         v_o_star = self.obj_embedder(o_star)
@@ -240,16 +256,16 @@ class CANet(nn.Module):
         # Pred attr
         β = self.img_obj_compose(torch.cat((v_o_star, x), dim=-1)) # Eq.3
         e_a = self.attr_adapter(β, v_a) # Eq.5
-        ω_a_x = F.normalize(ω_a_x, dim=-1)
-        e_a = F.normalize(e_a, dim=-1)
-        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x, e_a) # Eq.7
+        ω_a_x_norm = F.normalize(ω_a_x, dim=-1)
+        e_a_norm = F.normalize(e_a, dim=-1)
+        d_cos_ei = torch.einsum('bd,bad->ba', ω_a_x_norm, e_a_norm) # Eq.7
         d_cos_ei = d_cos_ei / self.τ
 
         # Pred composition
         v_ao = self.compose(self.train_attrs, self.train_objs)
-        ω_c_x = F.normalize(ω_c_x, dim=-1)
-        v_ao = F.normalize(v_ao, dim=-1)
-        d_cos_ci = ω_c_x @ v_ao.t() # Eq.8
+        ω_c_x_norm = F.normalize(ω_c_x, dim=-1)
+        v_ao_norm = F.normalize(v_ao, dim=-1)
+        d_cos_ci = ω_c_x_norm @ v_ao_norm.t() # Eq.8
         d_cos_ci = d_cos_ci / self.τ
         
         L_o = F.cross_entropy(d_cos_oi, o) # Eq.10
@@ -266,4 +282,3 @@ class CANet(nn.Module):
             with torch.no_grad():
                 loss, pred = self.val_forward(x)
             return loss, pred
-        
