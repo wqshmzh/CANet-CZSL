@@ -15,7 +15,7 @@ import csv
 from model.common import Evaluator
 from config_model import configure_model
 from data import dataset as dset
-from utils.utils import load_args
+from utils.utils import load_args, set_torch
 
 best_attr = 0.0
 best_obj = 0.0
@@ -36,6 +36,7 @@ def main():
     args.data_root = '/root/datasets/'
     device = 0 # Your GPU order. If you use CPU, ignore this.
     args.test_set = 'val'
+    set_torch(0)
     
     config_path = ospj(args.main_root, 'configs', args.dataset, 'CANet.yml')
     if os.path.exists(config_path):
