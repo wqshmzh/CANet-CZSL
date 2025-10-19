@@ -58,13 +58,13 @@ C-GQA: <https://s3.mlcloud.uni-tuebingen.de/czsl/cgqa-updated.zip>
             - test_pairs.txt
             - train_pairs.txt
             - val_pairs.txt
-        # ===Create this empty folder manually for UT-Zappos50K===# 
-        > images
-        # ======Only UT-Zappos50K has the following folders=======#
-        > Boots
-        > Sandals
-        > Shoes
-        > Slippers
+          # ===Create this empty folder manually for UT-Zappos50K===# 
+          > images
+          # ======Only UT-Zappos50K has the following folders=======#
+          > Boots
+          > Sandals
+          > Shoes
+          > Slippers
     ```
 
 7. Run **/utils/reorganize_utzap.py** to reorganize images in UT-Zappos50K, where set **DATA_FOLDER='/home/XXX/datasets'** in line 20.
